@@ -1,0 +1,55 @@
+{
+  "name": "api.yexley.net",
+  "version": "0.0.1",
+  "description": "api.yexley.net",
+  "main": "dist/index.js",
+  "repository": "git@github.com:ryexley/api-yexley-net.git",
+  "author": "Bob Yexley <bob@yexley.net>",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "start": "node ./dist/index.js | bunyan",
+    "start:dev": "NODE_ENV=dev nodemon -L --exec babel-node ./src/index.js | bunyan",
+    "lint": "eslint ./src",
+    "lint:fix": "yarn run lint --fix",
+    "build": "rm -rf ./dist && babel ./src --out-dir ./dist",
+    "version": "standard-version --sign"
+  },
+  "dependencies": {
+    "@babel/core": "^7.7.2",
+    "@babel/node": "^7.7.0",
+    "@babel/preset-env": "^7.7.1",
+    "@ryexley/service-core": "^0.0.4",
+    "config": "^3.2.4",
+    "express": "^4.17.1",
+    "http-status": "^1.4.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^8.2.0",
+    "@commitlint/config-conventional": "^8.2.0",
+    "commitizen": "^4.0.3",
+    "cz-conventional-changelog": "^3.0.2",
+    "eslint": "^6.6.0",
+    "eslint-config-eslint": "^5.0.1",
+    "eslint-plugin-node": "^10.0.0",
+    "husky": "^3.0.9",
+    "nodemon": "^1.19.4",
+    "standard-version": "^7.0.0"
+  },
+  "nodemonConfig": {
+    "events": {
+      "start": "echo \"\\x1Bc\" # clear the console on service restart"
+    }
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-push": "yarn run lint"
+    }
+  }
+}
