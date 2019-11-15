@@ -19,6 +19,18 @@
     "lines-around-comment": [
       "off"
     ],
+    "func-style": [
+      "error",
+      "declaration",
+      { "allowArrowFunctions": true }
+    ],
+    "space-before-function-paren": [
+      "error", {
+        "anonymous": "always",
+        "named": "never",
+        "asyncArrow": "always"
+      }
+    ],
     "node/no-unsupported-features/es-syntax": [
       "off"
     ]
