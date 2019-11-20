@@ -1,13 +1,19 @@
 import axios from "axios"
 import Keyv from "keyv"
-// import debug from "debug"
 import { isNil } from "../util"
 
 export class EsvBibleApi {
   constructor({ config, log }) {
-    const { esv: { rootUrl, apiKey } } = config
+    const {
+      esv: {
+        rootUrl,
+        apiKey
+      },
+      sqlite: {
+        filename: dbFilename
+      }
+    } = config
 
-    // this.debug = debug("api:services:bible:esv")
     this.log = log
 
     this.http = axios.create({
@@ -23,8 +29,17 @@ export class EsvBibleApi {
       "include-headings": false
     }
 
-    this.cache = new Keyv({
-      namespace: "esv-bible-cache"
+    this.cache = new Keyv(`sqlite://${dbFilename}`, {
+      namespace: "esv-bible-cache",
+      table: "esv_bible_passage_cache",
+      busyTimeout: 5000
+    })
+
+    this.cache.on("error", err => {
+      const error = new Error(err)
+
+      this.log.error(error)
+      throw new Error("cache connection error", error)
     })
   }
 
