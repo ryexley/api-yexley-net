@@ -14,5 +14,10 @@
   "esv": {
     "rootUrl": "https://api.esv.org/v3/",
     "apiKey": null
+  },
+  "sqlite": {
+    "filename": "./db/data/api-yexley-net.sqlite3",
+    "migrationsDir": "./db/migrations",
+    "migrationsTableName": "migrations"
   }
 }

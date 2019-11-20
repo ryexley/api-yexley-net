@@ -13,19 +13,26 @@
     "lint": "eslint ./src",
     "lint:fix": "yarn run lint --fix",
     "build": "rm -rf ./dist && babel ./src --out-dir ./dist",
-    "version": "standard-version --sign"
+    "version": "standard-version --sign",
+    "migration:create": "./node_modules/.bin/knex-migrate generate",
+    "migrate:up": "./node_modules/.bin/knex-migrate up",
+    "migrate:down": "./node_modules/.bin/knex-migrate down"
   },
   "dependencies": {
     "@babel/core": "^7.7.2",
     "@babel/node": "^7.7.0",
     "@babel/preset-env": "^7.7.1",
+    "@keyv/sqlite": "^2.0.2",
     "@ryexley/service-core": "^0.0.8",
     "axios": "^0.19.0",
     "config": "^3.2.4",
     "debug": "^4.1.1",
     "express": "^4.17.1",
     "http-status": "^1.4.0",
-    "keyv": "^3.1.0"
+    "keyv": "^3.1.0",
+    "knex": "^0.20.2",
+    "knex-migrate": "^1.7.4",
+    "sqlite3": "^4.1.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^8.2.0",

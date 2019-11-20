@@ -1,3 +1,9 @@
+# node-config
+**/local.json
+
+# not versioning our sqlite databases
+**/*.sqlite3
+
 # Logs
 logs
 *.log
@@ -102,6 +108,3 @@ dist
 
 # TernJS port file
 .tern-port
-
-# node-config
-**/local.json
