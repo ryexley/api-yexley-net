@@ -24,6 +24,9 @@
       "declaration",
       { "allowArrowFunctions": true }
     ],
+    "no-console": [
+      "warn"
+    ],
     "space-before-function-paren": [
       "error", {
         "anonymous": "never",

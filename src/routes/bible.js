@@ -16,6 +16,8 @@ export function bibleRouter(app) {
   }))
 
   router.post("/references", [validateRequestPayload(bibleReferenceSchema)], async (req, res) => {
+    log.debug({ payload: req.body })
+
     return res.status(HttpStatus.NOT_IMPLEMENTED).send("Not implemented yet")
   })
 

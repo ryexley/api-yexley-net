@@ -1,8 +1,15 @@
-import joi from "@hapi/joi"
+import HttpStatus from "http-status"
+import { isNotEmpty } from "../util"
 
 export function validateRequestPayload(schema) {
   return (req, res, next) => {
-    // TODO: validate the request payload with the given schema here
+    const { error } = schema.validate(req.body)
+
+    if (isNotEmpty(error)) {
+      const errors = error.details.map(err => err.message)
+
+      return res.status(HttpStatus.UNPROCESSABLE_ENTITY).send(errors)
+    }
 
     return next()
   }

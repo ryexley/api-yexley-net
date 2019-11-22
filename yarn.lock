@@ -883,10 +883,10 @@
     mkdirp "^0.5.1"
     rimraf "^2.5.2"
 
-"@ryexley/service-core@^0.0.13":
-  version "0.0.13"
-  resolved "https://registry.yarnpkg.com/@ryexley/service-core/-/service-core-0.0.13.tgz#f1fd2a0ad295fa8dbdf3ab780d927ea6d34e4da3"
-  integrity sha512-Q+6j5c4rZ7FD0MheR1S6ibaxJPXZnJFmJITZMWO7Pl0EHNRDcuk2jyn1iaEw47nr/op5IlaUeFzsk9Zn6iF3Dw==
+"@ryexley/service-core@^0.0.15":
+  version "0.0.15"
+  resolved "https://registry.yarnpkg.com/@ryexley/service-core/-/service-core-0.0.15.tgz#037854da2d71d6ab3478ff7f33a0d23d0b78f44d"
+  integrity sha512-5NwLNKk89VpubSH87pm8Eid/+/DG6Numn5AaqTkeDmU9ZcrDDeyQWKYxcjqF51xKqVQsajNEQnOHv2CmLuvKAA==
   dependencies:
     "@babel/cli" "^7.7.0"
     "@babel/core" "^7.7.2"

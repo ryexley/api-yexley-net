@@ -7,4 +7,6 @@ export const bibleReferenceSchema = joi.object({
   endVerse: joi.number().integer(),
   backgroundColorHex: joi.string().alphanum().max(10),
   unsplashImageId: joi.string().alphanum().max(64)
+}).options({
+  abortEarly: false
 })
