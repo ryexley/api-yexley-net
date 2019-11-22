@@ -1,6 +1,6 @@
 import { Router as routeFactory } from "express"
 import HttpStatus from "http-status"
-import packageConfig from "../../package.json"
+import packageConfig from "package.json"
 
 export function rootRouter(/* app */) {
   const router = routeFactory()

@@ -1,5 +1,5 @@
 import HttpStatus from "http-status"
-import { isNotEmpty } from "../util"
+import { isNotEmpty } from "#/util"
 
 export function validateRequestPayload(schema) {
   return (req, res, next) => {

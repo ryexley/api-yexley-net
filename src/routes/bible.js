@@ -1,7 +1,9 @@
 import { Router as routeFactory } from "express"
 import HttpStatus from "http-status"
-import { validateRequestPayload } from "../middleware/validate-request-payload"
-import { bibleReferenceSchema } from "../schemas/bible"
+import { validateRequestPayload } from "#/middleware/validate-request-payload"
+import { bibleReferenceSchema } from "#/schemas/bible"
+import { mapIncomingReference, mapOutgoingReference } from "#/maps/bible"
+import { isNotEmpty } from "#/util"
 
 export function bibleRouter(app) {
   const router = routeFactory()
@@ -16,14 +18,40 @@ export function bibleRouter(app) {
   }))
 
   router.post("/references", [validateRequestPayload(bibleReferenceSchema)], async (req, res) => {
-    log.debug({ payload: req.body })
+    try {
+      const timestamp = new Date().toISOString()
+      const newReference = await db.insertReference({
+        ...mapIncomingReference(req.body),
+        created: timestamp,
+        updated: timestamp
+      })
 
-    return res.status(HttpStatus.NOT_IMPLEMENTED).send("Not implemented yet")
+      if (isNotEmpty(newReference)) {
+        return res.status(HttpStatus.CREATED).send({
+          ...mapOutgoingReference(newReference)
+        })
+      }
+
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+        errors: [
+          "Error creating new reference"
+        ]
+      })
+    } catch (error) {
+      log.error(error)
+
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+        error: "error creating new reference"
+      })
+    }
   })
 
   router.get("/references", async (req, res) => {
     try {
-      const references = await db.getReferences()
+      const referencesData = await db.getReferences()
+      const references = referencesData.map(reference => ({
+        ...mapOutgoingReference(reference)
+      }))
 
       return res.status(HttpStatus.OK).send(references)
     } catch (error) {
@@ -36,10 +64,18 @@ export function bibleRouter(app) {
   })
 
   router.get("/:reference", async (req, res) => {
-    const { reference } = req.params
-    const passage = await esv.getPassage(reference)
+    try {
+      const { reference } = req.params
+      const passage = await esv.getPassage(reference)
 
-    return res.status(HttpStatus.OK).send(passage)
+      return res.status(HttpStatus.OK).send(passage)
+    } catch (error) {
+      log.error(error)
+
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+        error: "error fetching bible passage"
+      })
+    }
   })
 
   return router

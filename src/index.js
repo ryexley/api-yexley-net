@@ -10,6 +10,7 @@ function configure(app) {
   const { config: appConfig, config: { sqlite }, log } = app
   const dbConnectionFactory = () => knex({
     client: "sqlite3",
+    useNullAsDefault: true,
     connection: {
       filename: sqlite.filename
     }
