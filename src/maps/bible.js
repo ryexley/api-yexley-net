@@ -1,5 +1,6 @@
 export function mapIncomingReference(reference) {
   const {
+    collectionId,
     book,
     chapter,
     startVerse,
@@ -9,6 +10,7 @@ export function mapIncomingReference(reference) {
   } = reference
 
   return {
+    collection_id: collectionId,
     book,
     chapter,
     start_verse: startVerse,
@@ -21,6 +23,7 @@ export function mapIncomingReference(reference) {
 export function mapOutgoingReference(reference) {
   const {
     id,
+    collection_id,
     book,
     chapter,
     start_verse,
@@ -34,6 +37,7 @@ export function mapOutgoingReference(reference) {
 
   return {
     id,
+    collectionId: collection_id,
     book,
     chapter,
     startVerse: start_verse,

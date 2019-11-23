@@ -1,10 +1,12 @@
 const TABLE_NAME = "bible_passage_references"
+const PARENT_TABLE_NAME = "bible_passage_collections"
 
 exports.up = async function(knex) {
   const exists = await knex.schema.hasTable(TABLE_NAME)
 
-  return exists ? null : knex.schema.createTable(TABLE_NAME, table => {
-    table.increments("id")
+  return exists ? null : await knex.schema.createTable(TABLE_NAME, table => {
+    table.increments("id").primary()
+    table.bigInteger("collection_id").index("bible_passage_reference_collection").references("id").inTable(PARENT_TABLE_NAME).notNullable().onDelete("cascade")
     table.string("book", 64).notNullable()
     table.integer("chapter").notNullable()
     table.integer("start_verse").notNullable()
@@ -21,5 +23,5 @@ exports.up = async function(knex) {
 exports.down = async function(knex) {
   const exists = await knex.schema.hasTable(TABLE_NAME)
 
-  return exists ? knex.schema.dropTable(TABLE_NAME) : null
+  return exists ? await knex.schema.dropTable(TABLE_NAME) : null
 }

@@ -1,7 +1,7 @@
 import { Router as routeFactory } from "express"
 import HttpStatus from "http-status"
 import { validateRequestPayload } from "#/middleware/validate-request-payload"
-import { bibleReferenceSchema } from "#/schemas/bible"
+import { biblePassageCollectionSchema, bibleReferenceSchema } from "#/schemas/bible"
 import { mapIncomingReference, mapOutgoingReference } from "#/maps/bible"
 import { errorType } from "#/enums"
 import { isNotEmpty } from "#/util"
@@ -18,10 +18,58 @@ export function bibleRouter(app) {
     }
   }))
 
+  router.post("/collections", [validateRequestPayload(biblePassageCollectionSchema)], async (req, res) => {
+    try {
+      const timestamp = new Date().toISOString()
+      const newCollection = await db.insertBiblePassageCollection({
+        ...req.body,
+        created: timestamp,
+        updated: timestamp
+      })
+
+      if (isNotEmpty(newCollection)) {
+        return res.status(HttpStatus.CREATED).send({ ...newCollection })
+      }
+
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+        errors: [
+          "Error creating new Bible passage collection"
+        ]
+      })
+    } catch (error) {
+      log.error(error)
+
+      if (error.type === errorType.UNIQUE_CONSTRAINT_VIOLATION) {
+        return res.status(HttpStatus.CONFLICT).send({
+          error: errorType.UNIQUE_CONSTRAINT_VIOLATION,
+          message: error.message
+        })
+      }
+
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+        error: "Error creating new Bible passage collection"
+      })
+    }
+  })
+
+  router.get("/collections", async (req, res) => {
+    try {
+      const collections = await db.getBiblePassageCollections()
+
+      return res.status(HttpStatus.OK).send(collections)
+    } catch (error) {
+      log.error(error)
+
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+        error: "error getting bible passage collection list"
+      })
+    }
+  })
+
   router.post("/references", [validateRequestPayload(bibleReferenceSchema)], async (req, res) => {
     try {
       const timestamp = new Date().toISOString()
-      const newReference = await db.insertReference({
+      const newReference = await db.insertBiblePassageReference({
         ...mapIncomingReference(req.body),
         created: timestamp,
         updated: timestamp
@@ -56,7 +104,7 @@ export function bibleRouter(app) {
 
   router.get("/references", async (req, res) => {
     try {
-      const referencesData = await db.getReferences()
+      const referencesData = await db.getBiblePassageReferences()
       const references = referencesData.map(reference => ({
         ...mapOutgoingReference(reference)
       }))
