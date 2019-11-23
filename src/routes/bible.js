@@ -3,6 +3,7 @@ import HttpStatus from "http-status"
 import { validateRequestPayload } from "#/middleware/validate-request-payload"
 import { bibleReferenceSchema } from "#/schemas/bible"
 import { mapIncomingReference, mapOutgoingReference } from "#/maps/bible"
+import { errorType } from "#/enums"
 import { isNotEmpty } from "#/util"
 
 export function bibleRouter(app) {
@@ -39,6 +40,13 @@ export function bibleRouter(app) {
       })
     } catch (error) {
       log.error(error)
+
+      if (error.type === errorType.UNIQUE_CONSTRAINT_VIOLATION) {
+        return res.status(HttpStatus.CONFLICT).send({
+          error: errorType.UNIQUE_CONSTRAINT_VIOLATION,
+          message: error.message
+        })
+      }
 
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
         error: "error creating new reference"

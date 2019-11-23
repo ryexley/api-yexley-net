@@ -14,6 +14,7 @@ exports.up = async function(knex) {
     table.datetime("created").notNullable()
     table.datetime("updated").notNullable()
     table.datetime("deleted")
+    table.unique(["book", "chapter", "start_verse", "end_verse"], "unique_bible_reference")
   })
 }
 
