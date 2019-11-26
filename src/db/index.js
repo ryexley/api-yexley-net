@@ -18,7 +18,7 @@ export class Database {
 
   async insertBiblePassageCollection(collection) {
     try {
-      const id = await this.db("bible_passage_collections").returning("id").insert(collection)
+      const [id] = await this.db("bible_passage_collections").returning("id").insert(collection)
 
       return { id, ...collection }
     } catch (error) {
@@ -36,6 +36,25 @@ export class Database {
     }
   }
 
+  async getBiblePassageCollectionReferences(collectionSlug) {
+    try {
+      const collection = await this.db("bible_passage_collections")
+        .where({ slug: collectionSlug })
+        .whereNull("deleted")
+        .first()
+      const references = await this.db("bible_passage_references")
+        .where({ collection_id: collection.id })
+        .whereNull("deleted")
+
+      return {
+        ...collection,
+        references
+      }
+    } catch (error) {
+      throw new DatabaseError(error)
+    }
+  }
+
   async getBiblePassageReferences() {
     try {
       const references = await this.db("bible_passage_references").whereNull("deleted")
@@ -48,7 +67,7 @@ export class Database {
 
   async insertBiblePassageReference(reference) {
     try {
-      const id = await this.db("bible_passage_references").returning("id").insert(reference)
+      const [id] = await this.db("bible_passage_references").returning("id").insert(reference)
 
       return { ...reference, id }
     } catch (error) {

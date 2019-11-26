@@ -1,19 +1,31 @@
 import { Router as routeFactory } from "express"
 import HttpStatus from "http-status"
 import { validateRequestPayload } from "#/middleware/validate-request-payload"
-import { biblePassageCollectionSchema, bibleReferenceSchema } from "#/schemas/bible"
-import { mapIncomingReference, mapOutgoingReference } from "#/maps/bible"
 import { errorType } from "#/enums"
 import { isNotEmpty } from "#/util"
+import {
+  biblePassageCollectionSchema,
+  bibleReferenceSchema
+} from "#/schemas/bible"
+import {
+  mapIncomingCollection,
+  mapOutgoingCollection,
+  mapIncomingReference,
+  mapOutgoingReference
+} from "#/maps/bible"
 
 export function bibleRouter(app) {
   const router = routeFactory()
-  const { services: { esv }, db, log } = app
+  const { services: { esv }, db, log, config } = app
+  const { name: serviceName, host: { name: hostName, port: hostPort } } = config
+  const port = (hostPort !== 80) ? `:${hostPort}` : ""
+  const routerBaseUrl = `${hostName}${port}/bible`
 
   router.get("/", (req, res) => res.status(HttpStatus.OK).send({
     service: {
+      name: serviceName,
       meta: {
-        url: "api.yexley.net/bible"
+        url: routerBaseUrl
       }
     }
   }))
@@ -22,7 +34,7 @@ export function bibleRouter(app) {
     try {
       const timestamp = new Date().toISOString()
       const newCollection = await db.insertBiblePassageCollection({
-        ...req.body,
+        ...mapIncomingCollection(req.body),
         created: timestamp,
         updated: timestamp
       })
@@ -54,7 +66,10 @@ export function bibleRouter(app) {
 
   router.get("/collections", async (req, res) => {
     try {
-      const collections = await db.getBiblePassageCollections()
+      const collectionData = await db.getBiblePassageCollections()
+      const collections = collectionData.map(collection => ({
+        ...mapOutgoingCollection(collection)
+      }))
 
       return res.status(HttpStatus.OK).send(collections)
     } catch (error) {
@@ -62,6 +77,21 @@ export function bibleRouter(app) {
 
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
         error: "error getting bible passage collection list"
+      })
+    }
+  })
+
+  router.get("/collection/:slug/references", async (req, res) => {
+    try {
+      const collectionData = await db.getBiblePassageCollectionReferences("favorites")
+      const collection = mapOutgoingCollection(collectionData)
+
+      return res.status(HttpStatus.OK).send(collection)
+    } catch (error) {
+      log.error(error)
+
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+        error: "error getting bible passage collection"
       })
     }
   })

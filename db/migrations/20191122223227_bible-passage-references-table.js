@@ -11,6 +11,7 @@ exports.up = async function(knex) {
     table.integer("chapter").notNullable()
     table.integer("start_verse").notNullable()
     table.integer("end_verse")
+    table.string("slug", 96).notNullable()
     table.string("background_color_hex", 10)
     table.string("unsplash_image_id", 64)
     table.datetime("created").notNullable()

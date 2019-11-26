@@ -7,6 +7,7 @@ exports.up = async function(knex) {
     table.increments("id").primary()
     table.string("name", 64).notNullable()
     table.string("description", 256)
+    table.string("slug", 96).index("bible_passage_collection_slug").notNullable()
     table.datetime("created").notNullable()
     table.datetime("updated").notNullable()
     table.datetime("deleted")
