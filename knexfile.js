@@ -1,38 +1,12 @@
-const config = require("config")
+const initEnv = require("./src/util/env").initEnv
 
-const { sqlite } = config
+const env = initEnv()
 
 module.exports = {
-  development: {
-    client: "sqlite3",
-    connection: {
-      filename: sqlite.filename
-    },
-    migrations: {
-      tableName: sqlite.migrationsTableName,
-      directory: sqlite.migrationsDir
-    }
-  },
-
-  staging: {
-    client: "sqlite3",
-    connection: {
-      filename: sqlite.filename
-    },
-    migrations: {
-      tableName: sqlite.migrationsTableName,
-      directory: sqlite.migrationsDir
-    }
-  },
-
-  production: {
-    client: "sqlite3",
-    connection: {
-      filename: sqlite.filename
-    },
-    migrations: {
-      tableName: sqlite.migrationsTableName,
-      directory: sqlite.migrationsDir
-    }
+  client: "pg",
+  connection: env.DATABASE_URL,
+  migrations: {
+    tableName: env.DATABASE_MIGRATIONS_TABLE_NAME,
+    directory: env.DATABASE_MIGRATIONS_DIR
   }
 }

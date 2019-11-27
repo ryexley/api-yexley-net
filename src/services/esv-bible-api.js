@@ -4,23 +4,13 @@ import { isNil } from "#/util"
 import { ServiceError } from "#/errors/service-error"
 
 export class EsvBibleApi {
-  constructor({ config, log }) {
-    const {
-      esv: {
-        rootUrl,
-        apiKey
-      },
-      sqlite: {
-        filename: dbFilename
-      }
-    } = config
-
+  constructor({ env, log }) {
     this.log = log
 
     this.http = axios.create({
-      baseURL: rootUrl,
+      baseURL: env.ESV_ROOT_URL,
       headers: {
-        Authorization: `Token ${apiKey}`
+        Authorization: `Token ${env.ESV_API_KEY}`
       }
     })
 
@@ -30,7 +20,7 @@ export class EsvBibleApi {
       "include-headings": false
     }
 
-    this.cache = new Keyv(`sqlite://${dbFilename}`, {
+    this.cache = new Keyv(env.DATABASE_URL, {
       namespace: "esv-bible-cache",
       table: "esv_bible_passage_cache",
       busyTimeout: 5000

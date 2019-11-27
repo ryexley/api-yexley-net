@@ -1,23 +1,21 @@
-import config from "config"
 import service from "@ryexley/service-core"
 import knex from "knex"
-import { Database } from "./db"
-import { EsvBibleApi } from "./services/esv-bible-api"
-import { rootRouter } from "./routes/root"
-import { bibleRouter } from "./routes/bible"
+import { initEnv } from "#/util/env"
+import { Database } from "#/db"
+import { EsvBibleApi } from "#/services/esv-bible-api"
+import { rootRouter } from "#/routes/root"
+import { bibleRouter } from "#/routes/bible"
 
 function configure(app) {
-  const { config: appConfig, config: { sqlite }, log } = app
+  const { env: appEnv, log } = app
+
   const dbConnectionFactory = () => knex({
-    client: "sqlite3",
-    useNullAsDefault: true,
-    connection: {
-      filename: sqlite.filename
-    }
+    client: "pg",
+    connection: appEnv.DATABASE_URL
   })
 
-  const db = new Database({ connectionFactory: dbConnectionFactory, config: sqlite, log })
-  const esv = new EsvBibleApi({ config: appConfig, log })
+  const db = new Database({ connectionFactory: dbConnectionFactory })
+  const esv = new EsvBibleApi({ env: appEnv, log })
 
   return {
     db,
@@ -27,8 +25,10 @@ function configure(app) {
   }
 }
 
+const env = initEnv()
+
 const serviceConfig = {
-  config,
+  env,
   configure,
   routes: [
     { path: "/", router: rootRouter },
