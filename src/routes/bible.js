@@ -16,14 +16,13 @@ import {
 
 export function bibleRouter(app) {
   const router = routeFactory()
-  const { services: { esv }, db, log, config } = app
-  const { name: serviceName, host: { name: hostName, port: hostPort } } = config
-  const port = (hostPort !== 80) ? `:${hostPort}` : ""
-  const routerBaseUrl = `${hostName}${port}/bible`
+  const { services: { esv }, db, log, env } = app
+  const port = (env.SERVICE_PORT !== 80) ? `:${env.SERVICE_PORT}` : ""
+  const routerBaseUrl = `${env.SERVICE_HOST}${port}/bible`
 
   router.get("/", (req, res) => res.status(HttpStatus.OK).send({
     service: {
-      name: serviceName,
+      name: env.SERVICE_NAME,
       meta: {
         url: routerBaseUrl
       }
