@@ -29,7 +29,7 @@ export function mapIncomingReference(reference) {
   }
 }
 
-export function mapOutgoingReference(reference) {
+export function mapOutgoingReference(reference, options = {}) {
   const {
     id,
     collection_id,
@@ -45,6 +45,9 @@ export function mapOutgoingReference(reference) {
     deleted
   } = reference
 
+  const { routerBaseUrl, protocol = "http" } = options
+  const url = `${protocol}://${routerBaseUrl}/${slug}`
+
   return {
     id,
     collectionId: collection_id,
@@ -55,6 +58,7 @@ export function mapOutgoingReference(reference) {
     slug,
     backgroundColorHex: background_color_hex,
     unsplashImageId: unsplash_image_id,
+    url,
     created,
     updated,
     deleted
@@ -76,7 +80,7 @@ export function mapIncomingCollection(collection) {
   }
 }
 
-export function mapOutgoingCollection(collection) {
+export function mapOutgoingCollection(collection, options = {}) {
   const {
     id,
     name,
@@ -88,6 +92,8 @@ export function mapOutgoingCollection(collection) {
     references: collectionReferences = []
   } = collection
 
+  const references = collectionReferences.map(reference => mapOutgoingReference(reference, options))
+
   return {
     id,
     name,
@@ -96,6 +102,6 @@ export function mapOutgoingCollection(collection) {
     created,
     updated,
     deleted,
-    references: collectionReferences.map(mapOutgoingReference)
+    references
   }
 }

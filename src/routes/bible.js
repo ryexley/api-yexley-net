@@ -65,9 +65,10 @@ export function bibleRouter(app) {
 
   router.get("/collections", async (req, res) => {
     try {
+      const mappingOptions = { routerBaseUrl, protocol: req.protocol }
       const collectionData = await db.getBiblePassageCollections()
       const collections = collectionData.map(collection => ({
-        ...mapOutgoingCollection(collection)
+        ...mapOutgoingCollection(collection, mappingOptions)
       }))
 
       return res.status(HttpStatus.OK).send(collections)
@@ -82,8 +83,10 @@ export function bibleRouter(app) {
 
   router.get("/collection/:slug/references", async (req, res) => {
     try {
-      const collectionData = await db.getBiblePassageCollectionReferences("favorites")
-      const collection = mapOutgoingCollection(collectionData)
+      const { slug: collectionSlug } = req.params
+      const mappingOptions = { routerBaseUrl, protocol: req.protocol }
+      const collectionData = await db.getBiblePassageCollectionReferences(collectionSlug)
+      const collection = mapOutgoingCollection(collectionData, mappingOptions)
 
       return res.status(HttpStatus.OK).send(collection)
     } catch (error) {
@@ -97,6 +100,7 @@ export function bibleRouter(app) {
 
   router.post("/references", [validateRequestPayload(bibleReferenceSchema)], async (req, res) => {
     try {
+      const mappingOptions = { routerBaseUrl, protocol: req.protocol }
       const timestamp = new Date().toISOString()
       const newReference = await db.insertBiblePassageReference({
         ...mapIncomingReference(req.body),
@@ -106,7 +110,7 @@ export function bibleRouter(app) {
 
       if (isNotEmpty(newReference)) {
         return res.status(HttpStatus.CREATED).send({
-          ...mapOutgoingReference(newReference)
+          ...mapOutgoingReference(newReference, mappingOptions)
         })
       }
 
@@ -133,9 +137,10 @@ export function bibleRouter(app) {
 
   router.get("/references", async (req, res) => {
     try {
+      const mappingOptions = { routerBaseUrl, protocol: req.protocol }
       const referencesData = await db.getBiblePassageReferences()
       const references = referencesData.map(reference => ({
-        ...mapOutgoingReference(reference)
+        ...mapOutgoingReference(reference, mappingOptions)
       }))
 
       return res.status(HttpStatus.OK).send(references)
